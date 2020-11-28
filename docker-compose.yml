@@ -1,0 +1,41 @@
+version: '3.3'
+
+services:
+
+  elasticsearch:
+    image: elasticsearch:7.4.2
+    command: elasticsearch -Des.network.host=0.0.0.0
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: kibana:7.4.2
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch  
+
+  logstash:
+    image: logstash:7.4.2
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    volumes:
+      - ./logstash:/etc/logstash/conf.d
+      - ./logstash/patterns:/opt/logstash/patterns
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: prima/filebeat
+    volumes:
+      - ./filebeat/filebeat.yml:/filebeat.yml
+      - ../fake-logs:/var/log
+    depends_on:
+      - logstash
