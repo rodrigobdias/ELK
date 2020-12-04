@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 services:
 
   elasticsearch:
@@ -8,24 +8,49 @@ services:
       - discovery.type=single-node
       - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
       - xpack.security.enabled=$ELASTIC_SECURITY
+    ports:
+      - 9200:9200
+      - 9300:9300
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks: ['stack']
+    networks:
+      - stack
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:$ELASTIC_VERSION
+    image: docker.elastic.co/kibana/kibana:$KIBABA_VERSION
     environment:
       - ELASTICSEARCH_USERNAME=elastic
       - ELASTICSEARCH_PASSWORD=$ELASTIC_PASSWORD
-    ports: ['5601:5601']
-    networks: ['stack']
-    links: ['elasticsearch']
-    depends_on: ['elasticsearch']
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+      - logstash
+    links:
+      - elasticsearch
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://localhost:12201"
+        tag: "demo_kibana"
+    networks:
+      - stack
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:$LOGSTASH_VERSION
+    links:
+      - elasticsearch
+    volumes:
+      - .:/etc/logstash
+    command: logstash -f /etc/logstash/logstash.conf
+    ports:
+      - 12201:12201/udp
+    depends_on:
+      - elasticsearch
+    networks:
+      - stack
 
 networks:
   stack: {}
