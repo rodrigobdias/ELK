@@ -8,20 +8,19 @@ To put it on the air, execute the following command:
 docker-compose --compatibility up --build
 ```
 
+System settings
+
 ```shell
 ElasticSearch:
-
 URL: http://localhost:9200
 ```
 
 ```shell
 Kibana:
-
 URL: http://localhost:5601/
 ```
 
 ```shell
 USERNAME: elastic
-
 PASSWORD: elastic
 ```
