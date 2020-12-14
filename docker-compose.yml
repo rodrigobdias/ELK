@@ -17,14 +17,14 @@ services:
         hard: -1
     networks:
       - stack
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 1500M
-        reservations:
-          cpus: '0.25'
-          memory: 500M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.50'
+#          memory: 1700M
+#        reservations:
+#          cpus: '0.25'
+#          memory: 500M
 
   kibana:
     image: docker.elastic.co/kibana/kibana:$KIBABA_VERSION
@@ -45,14 +45,14 @@ services:
         tag: "demo_kibana"
     networks:
       - stack
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 600M
-        reservations:
-          cpus: '0.25'
-          memory: 200M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.50'
+#          memory: 600M
+#        reservations:
+#          cpus: '0.25'
+#          memory: 200M
 
   logstash:
     image: docker.elastic.co/logstash/logstash:$LOGSTASH_VERSION
@@ -67,14 +67,14 @@ services:
       - elasticsearch
     networks:
       - stack
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 600M
-        reservations:
-          cpus: '0.25'
-          memory: 200M
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.50'
+#          memory: 600M
+#        reservations:
+#          cpus: '0.25'
+#          memory: 200M
 
 networks:
   stack: {}
