@@ -50,23 +50,29 @@ services:
       - elasticsearch
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:$LOGSTASH_VERSION
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
     container_name: logstash
     ports:
-      - 5044:5044
-      - 5001:5001
-      - 12201:12201/udp
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+      - "5001:5001"
+      - "12201:12201/udp"
     environment:
-      ES_JAVA_OPTS: -Xmx2048m -Xms2048m"
-      http.host: 0.0.0.0
-#      xpack.monitoring.enabled: 'false'
-      xpack.monitoring.enabled: 'true'   
-      xpack.monitoring.elasticsearch.username: $ELASTIC_USERNAME
-      xpack.monitoring.elasticsearch.password: $ELASTIC_PASSWORD
-      xpack.monitoring.elasticsearch.url: http://elasticsearch:9200
-    volumes:
-      - .:/etc/logstash
-    command: logstash -f /etc/logstash/logstash.conf
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks: 
       - elk
     depends_on:
