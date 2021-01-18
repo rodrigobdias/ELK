@@ -31,22 +31,19 @@ services:
     networks:
       - elk
 
-
-
   kibana:
-    image: docker.elastic.co/kibana/kibana:$KIBABA_VERSION
-    container_name: kibana
-    environment:
-      ELASTICSEARCH_USERNAME: $ELASTIC_USERNAME
-      ELASTICSEARCH_PASSWORD: $ELASTIC_PASSWORD
-      ELASTICSEARCH_URL: "http://elasticsearch:9200" 
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: kibana        
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true 
     ports: 
       - 5601:5601
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://localhost:12201"
-        tag: "demo_kibana"      
     networks: 
       - elk
     depends_on: 
